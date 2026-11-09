@@ -56,19 +56,24 @@ function crearPortada(manga, conTexto = true) {
   div.className = "portada";
   div.style.setProperty("--h", manga.hue);
 
-  if (manga.img) {
-    const img = document.createElement("img");
-    img.src = manga.img;
-    img.alt = "Portada de " + manga.titulo;
-    img.loading = "lazy";
-    div.appendChild(img);
-  } else if (conTexto) {
+  // Texto de la portada de colores (se usa si no se encuentra la imagen)
+  const ponerTexto = () => {
+    if (!conTexto) return;
     const titulo = document.createElement("b");
     titulo.textContent = manga.titulo.split(",")[0];   // "One Piece"
     const vol = document.createElement("small");
     vol.textContent = manga.titulo.split(", ")[1] || "";
     div.append(titulo, vol);
-  }
+  };
+
+  // Busca la imagen en manga.img o, si no existe, en imagenes/<id>.jpg
+  const img = document.createElement("img");
+  img.src = manga.img || "imagenes/" + manga.id + ".jpg";
+  img.alt = "Portada de " + manga.titulo;
+  img.loading = "lazy";
+  // Si la imagen no existe, se muestra la portada de colores
+  img.addEventListener("error", () => { img.remove(); ponerTexto(); });
+  div.appendChild(img);
   return div;
 }
 
